@@ -162,6 +162,17 @@ Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#pha
 }
 ```
 
+## 📦 Folder Structure
+
+- background/ — Background scripts
+- content/ — Content scripts
+- popup/ — Extension popup UI
+- options/ — Settings page
+- icons/ — Extension icons
+- docs/ — Documentation
+- scripts/ — Utility scripts
+- test-resources/ — Test pages and artifacts
+
 ## 🛠️ Development
 
 ### Prerequisites
@@ -224,6 +235,17 @@ focusfix-extension/
 ├── package.json            # Node.js configuration
 └── README.md              # This file
 ```
+
+## 🌐 Browser Support
+- Chrome: Manifest V3 (`manifest.json`)
+- Firefox: Manifest V2 (`manifest-firefox.json`)
+
+## 🚀 v1.1.0 Feature Summary
+- Animated and high-contrast focus indicators
+- Custom focus styles and context-aware outlines
+- Multiple, always-visible skip links
+- Debug banner for development/testing
+- Robust cross-browser compatibility
 
 ### Code Quality Standards
 
