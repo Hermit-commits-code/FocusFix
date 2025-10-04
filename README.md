@@ -4,7 +4,7 @@
 
 **Automatically repair broken keyboard navigation and focus management on any website**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Firefox](https://img.shields.io/badge/firefox-supported-orange.svg)](https://addons.mozilla.org/firefox/)
 [![Chrome](https://img.shields.io/badge/chrome-coming_soon-yellow.svg)](#)
@@ -86,15 +86,28 @@ All core modules are focused on improving keyboard navigation experience. See [R
 
 ### Chrome (Available for Testing)
 
-1. **Manual Installation (Development)**
-   ```bash
-   git clone https://github.com/yourusername/focusfix-extension.git
-   cd focusfix-extension
-   # Open Chrome and go to chrome://extensions
-   # Enable "Developer mode"
-   # Click "Load unpacked"
-   # Select the project folder (with manifest-chrome.json)
-   ```
+1. **Build and Install (Development)**
+  ```bash
+  git clone https://github.com/yourusername/focusfix-extension.git
+  cd focusfix-extension
+  bash scripts/build-chrome.sh
+  # Open Chrome and go to chrome://extensions
+  # Enable "Developer mode"
+  # Click "Load unpacked"
+  # Select the dist folder
+  ```
+
+### Firefox (Available for Testing)
+
+1. **Build and Install (Development)**
+  ```bash
+  git clone https://github.com/yourusername/focusfix-extension.git
+  cd focusfix-extension
+  bash scripts/build-firefox.sh
+  # Open Firefox and go to about:debugging
+  # Click "This Firefox" → "Load Temporary Add-on"
+  # Select dist/manifest.json
+  ```
 
 Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#phase-7-cross-platform-expansion-month-2)
 
