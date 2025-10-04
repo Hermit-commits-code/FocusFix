@@ -148,58 +148,154 @@ let diagnostics = {
 (function repairTabindexOrder() {
   let tabindexIssues = 0;
 
-  // Find navigation elements with bad tabindex order
-  const navs = document.querySelectorAll(
-    'nav, [role="navigation"], .nav, .navbar, .menu'
-  );
-  navs.forEach((nav) => {
-    const focusableElements = nav.querySelectorAll(
-      'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    // Find navigation elements and ARIA landmarks with bad tabindex order
+    const navs = document.querySelectorAll(
+      'nav, [role="navigation"], [role="main"], [role="banner"], [role="complementary"], [role="contentinfo"], .nav, .navbar, .menu'
     );
-    focusableElements.forEach((el, index) => {
-      // Only set tabindex if it's missing or incorrectly set
-      const currentTabindex = parseInt(el.getAttribute("tabindex") || "0");
-      if (currentTabindex > 0 || el.getAttribute("tabindex") === null) {
-        el.setAttribute("tabindex", "0"); // Use 0 for natural tab order
-        tabindexIssues++;
+    navs.forEach((nav) => {
+      // Include ARIA roles and custom focusable selectors
+      const focusableElements = nav.querySelectorAll(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"]), [role="button"], [role="link"], [role="textbox"], [role="searchbox"]'
+      );
+      let tabOrder = [];
+      focusableElements.forEach((el, index) => {
+        // Only set tabindex if it's missing or incorrectly set
+        const currentTabindex = parseInt(el.getAttribute("tabindex") || "0");
+        if (currentTabindex > 0 || el.getAttribute("tabindex") === null) {
+          el.setAttribute("tabindex", "0"); // Use 0 for natural tab order
+          tabindexIssues++;
+        }
+        tabOrder.push(el);
+      });
+      // Store tab order for visual overlay
+      nav._focusfixTabOrder = tabOrder;
+    });
+
+    // Find forms and ARIA form regions with bad tabindex order
+    const forms = document.querySelectorAll("form, [role='form']");
+    forms.forEach((form) => {
+      const formElements = form.querySelectorAll(
+        'input, textarea, select, button, [tabindex]:not([tabindex="-1"]), [role="button"], [role="textbox"]'
+      );
+      let tabIndex = 1;
+      let tabOrder = [];
+      formElements.forEach((el) => {
+        // Skip if already has proper tabindex
+        const currentTabindex = parseInt(el.getAttribute("tabindex") || "0");
+        if (currentTabindex <= 0 || currentTabindex > formElements.length) {
+          el.setAttribute("tabindex", tabIndex.toString());
+          tabIndex++;
+          tabindexIssues++;
+        }
+        tabOrder.push(el);
+      });
+      // Store tab order for visual overlay
+      form._focusfixTabOrder = tabOrder;
+    });
+
+    // Fix elements with tabindex > 0 outside of forms/landmarks (anti-pattern)
+    const highTabindexElements = document.querySelectorAll(
+      '[tabindex]:not([tabindex="0"]):not([tabindex="-1"] )'
+    );
+    highTabindexElements.forEach((el) => {
+      const tabindex = parseInt(el.getAttribute("tabindex"));
+      if (tabindex > 0) {
+        // Check if it's not in a form or ARIA landmark
+        if (!el.closest("form") && !el.closest("nav, [role='navigation'], [role='main'], [role='banner'], [role='complementary'], [role='contentinfo']")) {
+          el.setAttribute("tabindex", "0");
+          tabindexIssues++;
+        }
       }
     });
-  });
 
-  // Find forms with bad tabindex order
-  const forms = document.querySelectorAll("form");
-  forms.forEach((form) => {
-    const formElements = form.querySelectorAll(
-      'input, textarea, select, button, [tabindex]:not([tabindex="-1"])'
-    );
-    let tabIndex = 1;
-    formElements.forEach((el) => {
-      // Skip if already has proper tabindex
-      const currentTabindex = parseInt(el.getAttribute("tabindex") || "0");
-      if (currentTabindex <= 0 || currentTabindex > formElements.length) {
-        el.setAttribute("tabindex", tabIndex.toString());
-        tabIndex++;
-        tabindexIssues++;
+  diagnostics.tabindexIssues = tabindexIssues;
+    // --- Visual Tab Order Preview Overlay ---
+    function showTabOrderOverlay() {
+      // Remove any existing overlay
+      document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
+
+      // Helper to create overlay label
+      function createOverlayLabel(target, index) {
+        const rect = target.getBoundingClientRect();
+        const label = document.createElement('div');
+        label.className = 'focusfix-taborder-overlay';
+        label.textContent = index + 1;
+        label.style.position = 'fixed';
+        label.style.left = `${rect.left + window.scrollX}px`;
+        label.style.top = `${rect.top + window.scrollY}px`;
+        label.style.width = '24px';
+        label.style.height = '24px';
+        label.style.background = 'rgba(25, 118, 210, 0.85)';
+        label.style.color = '#fff';
+        label.style.fontWeight = 'bold';
+        label.style.fontSize = '16px';
+        label.style.borderRadius = '50%';
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.justifyContent = 'center';
+        label.style.zIndex = '2147483647';
+        label.style.pointerEvents = 'none';
+        label.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+        document.body.appendChild(label);
       }
-    });
-  });
 
-  // Fix elements with tabindex > 0 outside of forms (anti-pattern)
-  const highTabindexElements = document.querySelectorAll(
-    '[tabindex]:not([tabindex="0"]):not([tabindex="-1"])'
-  );
-  highTabindexElements.forEach((el) => {
-    const tabindex = parseInt(el.getAttribute("tabindex"));
-    if (tabindex > 0) {
-      // Check if it's not in a form (forms handle their own tabindex)
-      if (!el.closest("form")) {
-        el.setAttribute("tabindex", "0");
-        tabindexIssues++;
+      // Show overlays for navs
+      const navs = document.querySelectorAll(
+        'nav, [role="navigation"], [role="main"], [role="banner"], [role="complementary"], [role="contentinfo"], .nav, .navbar, .menu'
+      );
+      navs.forEach(nav => {
+        if (nav._focusfixTabOrder && nav._focusfixTabOrder.length > 0) {
+          nav._focusfixTabOrder.forEach((el, idx) => {
+            createOverlayLabel(el, idx);
+          });
+        }
+      });
+      // Show overlays for forms
+      const forms = document.querySelectorAll('form, [role="form"]');
+      forms.forEach(form => {
+        if (form._focusfixTabOrder && form._focusfixTabOrder.length > 0) {
+          form._focusfixTabOrder.forEach((el, idx) => {
+            createOverlayLabel(el, idx);
+          });
+        }
+      });
+    }
+
+    // Expose overlay function for diagnostics/debug
+    window.focusfixShowTabOrderOverlay = showTabOrderOverlay;
+  // --- Performance Optimizations ---
+  // Throttle overlay rendering to avoid excessive DOM updates
+  let overlayTimeout = null;
+  function throttledShowOverlay() {
+    if (overlayTimeout) clearTimeout(overlayTimeout);
+    overlayTimeout = setTimeout(() => {
+      if (overlayVisible) window.focusfixShowTabOrderOverlay();
+    }, 200);
+  }
+
+  // Use MutationObserver to update tab order overlay on DOM changes
+  const observer = new MutationObserver(() => {
+    throttledShowOverlay();
+  });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+  // Clean up overlays and observer on page unload
+  window.addEventListener('beforeunload', () => {
+    document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
+    observer.disconnect();
+  });
+  // Keyboard shortcut: Alt+Shift+O to show/hide tab order overlay
+  let overlayVisible = false;
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.shiftKey && e.code === 'KeyO') {
+      overlayVisible = !overlayVisible;
+      if (overlayVisible) {
+        window.focusfixShowTabOrderOverlay();
+      } else {
+        document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
       }
     }
   });
-
-  diagnostics.tabindexIssues = tabindexIssues;
 })();
 
 // Message handling for popup communication

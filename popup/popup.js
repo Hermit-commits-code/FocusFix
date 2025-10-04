@@ -52,6 +52,22 @@ document.getElementById("toggleTabindex").addEventListener("change", (e) => {
 
 // Handle diagnostics request
 document.getElementById("diagnosticsBtn").addEventListener("click", () => {
+// Handle tab order overlay trigger
+document.getElementById("tabOrderBtn").addEventListener("click", () => {
+  // Send message to content script to show tab order overlay
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      chrome.scripting.executeScript({
+        target: { tabId: tabs[0].id },
+        func: () => {
+          if (window.focusfixShowTabOrderOverlay) {
+            window.focusfixShowTabOrderOverlay();
+          }
+        }
+      });
+    }
+  });
+});
   chrome.runtime.sendMessage({ action: "getDiagnostics" }, (response) => {
     if (response) {
       const diagnosticsDiv = document.getElementById("diagnostics");

@@ -34,7 +34,9 @@ FocusFix is a privacy-first browser extension that automatically detects and rep
 | Focus Outline Enhancement | ✅ Complete | Visible focus indicators for all interactive elements |
 | Skip to Content Links     | ✅ Complete | Automatic skip navigation insertion when missing      |
 | Tabindex Order Repair     | ✅ Complete | Logical keyboard navigation sequence fixing           |
-| Real-time Diagnostics     | ✅ Complete | Live keyboard navigation issue detection and reporting      |
+| Advanced Tab Order Logic  | ✅ Complete | Smart tab order repair for complex layouts, ARIA roles, and dynamic content |
+| Visual Tab Order Preview  | ✅ Complete | Numbered overlay shows tab sequence for diagnostics/debugging |
+| Real-time Diagnostics     | ✅ Complete | Live keyboard navigation issue detection and reporting |
 | Settings Export           | ✅ Complete | Export configuration and diagnostics data              |
 | Per-Site Configuration   | ✅ Complete | Persistent user preferences and site-specific rules         |
 
@@ -42,12 +44,17 @@ All core modules are focused on improving keyboard navigation experience. See [R
 
 ### Upcoming Keyboard Features (Roadmap)
 
-• ⚡ **Advanced Tab Order**: Smart tab sequence based on visual layout  
-• � **Custom Focus Styles**: User-defined focus indicator appearance  
+• 🧠 **AI Tab Order**: Machine learning-based tab sequence prediction  
+• 🎨 **Custom Focus Styles**: User-defined focus indicator appearance  
 • ⌨️ **Keyboard Shortcuts**: Quick navigation with custom hotkeys  
 • 🎯 **Focus Context**: Highlight containers and navigation groups  
 • 🔄 **Focus Restoration**: Remember and restore focus in dynamic content  
-• 🌐 **Cross-Platform**: Chrome support and mobile browser compatibility
+• 🌐 **Mobile Browser Support**: Extend compatibility to mobile browsers
+
+- Advanced tab order logic for complex layouts, ARIA landmarks, and dynamic content
+- Visual tab order preview overlay (Alt+Shift+O or popup button)
+- Real-time diagnostics and CSV export
+- Performance optimizations: throttled overlay, mutation observer, memory management
 
 ## 🚀 v1.1.0 Features
 
