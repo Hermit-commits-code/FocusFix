@@ -1,15 +1,16 @@
-
 ### Content Security Policy (CSP) Limitations
 
 FocusFix works by injecting content scripts that modify the DOM and styles of web pages. Most sites allow these changes, even with strict CSP. However, extensions cannot inject or load external scripts or resources that are blocked by the site's CSP. FocusFix only uses code and resources packaged within the extension, so it remains compatible with most sites.
 
 **Limitations:**
+
 - FocusFix cannot bypass CSP to load third-party scripts or resources.
 - If a site blocks external scripts, FocusFix will still apply DOM and style fixes, but cannot inject anything blocked by CSP.
 - This is a browser security feature and applies to all extensions.
 
 **Best Practice:**
 FocusFix is designed to work with packaged JS/CSS only. If you see CSP errors in the console, it means the site is blocking certain scripts, but FocusFix will still function for DOM and style repairs unless the site blocks all extension content scripts (rare).
+
 # FocusFix - Accessibility Browser Extension
 
 ![FocusFix Logo](assets/logo-banner.png)
@@ -41,16 +42,16 @@ FocusFix is a privacy-first browser extension that automatically detects and rep
 
 ### Core Keyboard Navigation Fixes
 
-| Feature                   | Status      | Description                                           |
-| ------------------------- | ----------- | ----------------------------------------------------- |
-| Focus Outline Enhancement | ✅ Complete | Visible focus indicators for all interactive elements |
-| Skip to Content Links     | ✅ Complete | Automatic skip navigation insertion when missing      |
-| Tabindex Order Repair     | ✅ Complete | Logical keyboard navigation sequence fixing           |
+| Feature                   | Status      | Description                                                                 |
+| ------------------------- | ----------- | --------------------------------------------------------------------------- |
+| Focus Outline Enhancement | ✅ Complete | Visible focus indicators for all interactive elements                       |
+| Skip to Content Links     | ✅ Complete | Automatic skip navigation insertion when missing                            |
+| Tabindex Order Repair     | ✅ Complete | Logical keyboard navigation sequence fixing                                 |
 | Advanced Tab Order Logic  | ✅ Complete | Smart tab order repair for complex layouts, ARIA roles, and dynamic content |
-| Visual Tab Order Preview  | ✅ Complete | Numbered overlay shows tab sequence for diagnostics/debugging |
-| Real-time Diagnostics     | ✅ Complete | Live keyboard navigation issue detection and reporting |
-| Settings Export           | ✅ Complete | Export configuration and diagnostics data              |
-| Per-Site Configuration   | ✅ Complete | Persistent user preferences and site-specific rules         |
+| Visual Tab Order Preview  | ✅ Complete | Numbered overlay shows tab sequence for diagnostics/debugging               |
+| Real-time Diagnostics     | ✅ Complete | Live keyboard navigation issue detection and reporting                      |
+| Settings Export           | ✅ Complete | Export configuration and diagnostics data                                   |
+| Per-Site Configuration    | ✅ Complete | Persistent user preferences and site-specific rules                         |
 
 All core modules are focused on improving keyboard navigation experience. See [ROADMAP.md](ROADMAP.md) for future keyboard-focused features.
 
@@ -99,27 +100,29 @@ All core modules are focused on improving keyboard navigation experience. See [R
 ### Chrome (Available for Testing)
 
 1. **Build and Install (Development)**
-  ```bash
-  git clone https://github.com/yourusername/focusfix-extension.git
-  cd focusfix-extension
-  bash scripts/build-chrome.sh
-  # Open Chrome and go to chrome://extensions
-  # Enable "Developer mode"
-  # Click "Load unpacked"
-  # Select the dist folder
-  ```
+
+```bash
+git clone https://github.com/yourusername/focusfix-extension.git
+cd focusfix-extension
+bash scripts/build-chrome.sh
+# Open Chrome and go to chrome://extensions
+# Enable "Developer mode"
+# Click "Load unpacked"
+# Select the dist folder
+```
 
 ### Firefox (Available for Testing)
 
 1. **Build and Install (Development)**
-  ```bash
-  git clone https://github.com/yourusername/focusfix-extension.git
-  cd focusfix-extension
-  bash scripts/build-firefox.sh
-  # Open Firefox and go to about:debugging
-  # Click "This Firefox" → "Load Temporary Add-on"
-  # Select dist/manifest.json
-  ```
+
+```bash
+git clone https://github.com/yourusername/focusfix-extension.git
+cd focusfix-extension
+bash scripts/build-firefox.sh
+# Open Firefox and go to about:debugging
+# Click "This Firefox" → "Load Temporary Add-on"
+# Select dist/manifest.json
+```
 
 Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#phase-7-cross-platform-expansion-month-2)
 
@@ -167,12 +170,12 @@ Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#pha
 
 ### Keyboard Navigation Settings
 
-| Category          | Description                      | Default       |
-| ----------------- | -------------------------------- | ------------- |
-| Focus Enhancement | Visible focus outline injection  | Enabled       |
-| Skip Navigation   | Skip to content link insertion   | Enabled       |
-| Tab Order Repair  | Tabindex sequence fixing         | Enabled       |
-| Focus Color       | Custom focus indicator color     | #1976d2       |
+| Category            | Description                     | Default       |
+| ------------------- | ------------------------------- | ------------- |
+| Focus Enhancement   | Visible focus outline injection | Enabled       |
+| Skip Navigation     | Skip to content link insertion  | Enabled       |
+| Tab Order Repair    | Tabindex sequence fixing        | Enabled       |
+| Focus Color         | Custom focus indicator color    | #1976d2       |
 | Site-Specific Rules | Per-domain keyboard behavior    | As configured |
 
 ### Focus Customization
@@ -182,7 +185,7 @@ Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#pha
 {
   "focusOutline": {
     "color": "#1976d2",
-    "width": "2px", 
+    "width": "2px",
     "style": "solid",
     "offset": "2px"
   },
@@ -194,16 +197,41 @@ Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#pha
 }
 ```
 
-## 📦 Folder Structure
+## 📦 Modular Code Structure
 
-- background/ — Background scripts
-- content/ — Content scripts
-- popup/ — Extension popup UI
-- options/ — Settings page
-- icons/ — Extension icons
-- docs/ — Documentation
-- scripts/ — Utility scripts
-- test-resources/ — Test pages and artifacts
+FocusFix uses a modular architecture for maintainability and scalability. All major accessibility features are implemented as separate modules in `content/modules/` and bundled for browser compatibility using Webpack.
+
+### Key Modules
+
+| Module               | Description                                                       |
+| -------------------- | ----------------------------------------------------------------- |
+| focusOutline.js      | Injects visible focus outlines and custom styles                  |
+| skipLinks.js         | Adds skip navigation links if missing                             |
+| tabOrder.js          | Repairs tabindex order and provides tab order overlay             |
+| keyboardShortcuts.js | Keyboard shortcuts for navigation and toggling features           |
+| focusContext.js      | Highlights navigation groups/containers as users tab through      |
+| smartFocus.js        | Smart focus management: modal trapping, restoration, logical flow |
+
+### Build Process
+
+FocusFix uses Webpack to bundle all modules into a single browser-compatible content script:
+
+```bash
+npm install
+npm run build
+# Loads dist/chrome/content.js for Chrome extension
+```
+
+### Diagnostics Feature
+
+The extension popup includes a "View Diagnostics" button that displays live accessibility info for the current page:
+
+- Number of focusable elements
+- Skip link status
+- Tab order issues
+- Page URL and scan timestamp
+
+This helps users and developers verify accessibility improvements in real time.
 
 ## 🛠️ Development
 
@@ -269,10 +297,12 @@ focusfix-extension/
 ```
 
 ## 🌐 Browser Support
+
 - Chrome: Manifest V3 (`manifest.json`)
 - Firefox: Manifest V2 (`manifest-firefox.json`)
 
 ## 🚀 v1.1.0 Feature Summary
+
 - Animated and high-contrast focus indicators
 - Custom focus styles and context-aware outlines
 - Multiple, always-visible skip links
@@ -312,12 +342,14 @@ npm run test:watch
 ## 🏗️ Build & Test Instructions
 
 ### Chrome
+
 1. Go to `chrome://extensions`
 2. Enable "Developer mode"
 3. Click "Load unpacked" and select your project folder (with Manifest V3)
 4. Test features: animated focus rings, skip links, high contrast mode, custom styles
 
 ### Firefox
+
 1. Open Firefox Developer Edition
 2. Go to `about:debugging`
 3. Click "This Firefox" → "Load Temporary Add-on"
@@ -325,6 +357,7 @@ npm run test:watch
 5. Test features as above
 
 ## 🌐 Cross-Browser Notes
+
 - FocusFix is tested and optimized for Chrome (Manifest V3) and Firefox (Manifest V2)
 - Some sites (Twitter, Chrome Web Store) may block extension scripts due to CSP
 - For best results, test on a variety of real-world sites
@@ -353,14 +386,14 @@ We welcome contributions from the keyboard navigation and accessibility communit
 
 ## 📚 Documentation
 
-| Document                            | Description                                   |
-| ----------------------------------- | --------------------------------------------- |
-| [🗺️ Roadmap](ROADMAP.md)            | Keyboard navigation development roadmap |
-| [📝 Changelog](CHANGELOG.md)        | Detailed version history and release notes    |
-| [🤝 Contributing](CONTRIBUTING.md)  | Guidelines for contributors                   |
-| [📖 API Reference](docs/api.md)     | Focus fix API documentation                   |
-| [🔧 Architecture](docs/architecture.md)  | Technical architecture overview               |
-| [🎯 User Guide](docs/user-guide.md) | Complete keyboard navigation user guide                   |
+| Document                                | Description                                |
+| --------------------------------------- | ------------------------------------------ |
+| [🗺️ Roadmap](ROADMAP.md)                | Keyboard navigation development roadmap    |
+| [📝 Changelog](CHANGELOG.md)            | Detailed version history and release notes |
+| [🤝 Contributing](CONTRIBUTING.md)      | Guidelines for contributors                |
+| [📖 API Reference](docs/api.md)         | Focus fix API documentation                |
+| [🔧 Architecture](docs/architecture.md) | Technical architecture overview            |
+| [🎯 User Guide](docs/user-guide.md)     | Complete keyboard navigation user guide    |
 
 ## 🛣️ Roadmap
 
@@ -368,16 +401,16 @@ We welcome contributions from the keyboard navigation and accessibility communit
 
 ### Upcoming Releases
 
-| Version | Timeline | Features                                       |
-| ------- | -------- | ---------------------------------------------- |
+| Version | Timeline | Features                                            |
+| ------- | -------- | --------------------------------------------------- |
 | v1.1.0  | Month 1  | Chrome extension support, advanced focus indicators |
-| v1.2.0  | Month 2  | Smart tab order logic, performance optimization    |
-| v1.3.0  | Month 3  | Visual focus enhancements, modal focus trapping              |
-| v2.0.0  | Month 6  | Advanced keyboard navigation, developer tools                |
-| v1.1.0  | Month 1  | Chrome extension support, enhanced diagnostics |
-| v1.2.0  | Month 2  | ARIA repair engine, color contrast analysis    |
-| v1.3.0  | Month 3  | Premium features, team management              |
-| v2.0.0  | Month 6  | Enterprise platform, API access                |
+| v1.2.0  | Month 2  | Smart tab order logic, performance optimization     |
+| v1.3.0  | Month 3  | Visual focus enhancements, modal focus trapping     |
+| v2.0.0  | Month 6  | Advanced keyboard navigation, developer tools       |
+| v1.1.0  | Month 1  | Chrome extension support, enhanced diagnostics      |
+| v1.2.0  | Month 2  | ARIA repair engine, color contrast analysis         |
+| v1.3.0  | Month 3  | Premium features, team management                   |
+| v2.0.0  | Month 6  | Enterprise platform, API access                     |
 
 [View Complete Roadmap →](ROADMAP.md)
 
@@ -429,20 +462,24 @@ _Making keyboard navigation better, one website at a time._
 ## 🛠️ Troubleshooting & Limitations
 
 FocusFix may not work on all websites due to browser security restrictions:
+
 - Sites with strict Content Security Policy (CSP), like Twitter or Chrome Web Store, may block extension scripts and styles.
 - Internal browser pages (chrome://, about:) do not allow extensions.
 - Some sites use custom protections against third-party scripts.
 
 ### How to Check if FocusFix is Running
+
 - Open DevTools Console and look for "FocusFix Content Script" logs.
 - Tab through the page: look for visible focus rings and skip links.
 - Try on a simple site (like example.com) to confirm extension functionality.
 - Enable debug mode (see below) for a visible "FocusFix active" banner.
 
 ### Debug Mode
+
 - You can enable debug mode in settings or via the extension popup to show a small "FocusFix active" banner on supported pages.
 
 ### User Feedback
+
 - If FocusFix does not work on a site, please report it via GitHub Issues. Include the site URL and any error messages from DevTools Console.
 
 For more details, see the docs/ folder and ROADMAP.md.
