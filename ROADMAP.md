@@ -61,10 +61,8 @@ FocusFix has successfully implemented the core real-time keyboard accessibility 
 
 ### Enhanced Visual Indicators
 
-- [ ] **Focus Context Highlighting**: Subtle container highlighting for complex widgets
-- [ ] **Focus Path Visualization**: Show keyboard navigation path through page sections
-- [ ] **Focus State Persistence**: Remember user's last focused element per page
-- [ ] **Keyboard Navigation Hints**: Discoverable keyboard shortcuts overlay
+ [x] **Focus Context Highlighting**: Subtle container highlighting for complex widgets
+ [x] **Keyboard Navigation Hints**: Discoverable keyboard shortcuts overlay
 
 ### Smart Focus Management
 

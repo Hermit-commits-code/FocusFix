@@ -233,6 +233,123 @@ let diagnostics = {
   diagnostics.tabindexIssues = tabindexIssues;
     // --- Visual Tab Order Preview Overlay ---
 // --- Keyboard Shortcuts Module ---
+// --- Focus Context Highlighting Module ---
+// --- Smart Focus Management Module ---
+  // Logical focus flow: skip decorative elements
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      let el = document.activeElement;
+      if (el && el.hasAttribute('aria-hidden')) {
+        e.preventDefault();
+        let next = el.nextElementSibling;
+        while (next && next.hasAttribute('aria-hidden')) {
+          next = next.nextElementSibling;
+        }
+        if (next) next.focus();
+      }
+    }
+  });
+
+  // Focus group navigation: arrow keys in menus/tabs
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      let el = document.activeElement;
+      let group = el.closest('[role="menu"], [role="tablist"], .menu, .tablist');
+      if (group) {
+        let items = Array.from(group.querySelectorAll('[role="menuitem"], [role="tab"], .menuitem, .tab'));
+        let idx = items.indexOf(el);
+        if (idx !== -1) {
+          let nextIdx = idx;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextIdx++;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nextIdx--;
+          nextIdx = (nextIdx + items.length) % items.length;
+          items[nextIdx].focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
+(function smartFocusManagement() {
+  // Modal focus trapping
+  function trapFocus(modal) {
+    const focusable = modal.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    modal.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    });
+  }
+  // Auto-detect modals and apply trapping
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('[role="dialog"], .modal, .focusfix-modal').forEach(modal => {
+      if (!modal._focusfixTrapped) {
+        trapFocus(modal);
+        modal._focusfixTrapped = true;
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Focus restoration after modal close
+  let lastTrigger = null;
+  document.addEventListener('click', (e) => {
+    if (e.target.matches('[data-open-modal]')) {
+      lastTrigger = e.target;
+    }
+  });
+  document.addEventListener('focusout', (e) => {
+    if (e.target.matches('[role="dialog"], .modal, .focusfix-modal')) {
+      setTimeout(() => {
+        if (lastTrigger) lastTrigger.focus();
+      }, 100);
+    }
+  });
+})();
+(function focusContextHighlighting() {
+  let lastContext = null;
+  function highlightContext(el) {
+    // Remove previous highlight
+    if (lastContext) {
+      lastContext.classList.remove('focusfix-context-highlight');
+    }
+    // Find nearest nav, section, aside, or main
+    const context = el.closest('nav, section, aside, main, [role="navigation"], [role="main"], [role="region"], [role="banner"], [role="complementary"]');
+    if (context) {
+      context.classList.add('focusfix-context-highlight');
+      lastContext = context;
+    }
+  }
+  // Add highlight style
+  if (!document.getElementById('focusfix-context-style')) {
+    const style = document.createElement('style');
+    style.id = 'focusfix-context-style';
+    style.textContent = `.focusfix-context-highlight {
+      box-shadow: 0 0 0 4px #ffeb3b88, 0 0 12px 2px #1976d2;
+      transition: box-shadow 0.2s;
+    }`;
+    document.head.appendChild(style);
+  }
+  // Listen for focus events on all focusable elements
+  document.addEventListener('focusin', (e) => {
+    highlightContext(e.target);
+  });
+  document.addEventListener('focusout', () => {
+    if (lastContext) lastContext.classList.remove('focusfix-context-highlight');
+    lastContext = null;
+  });
+})();
 (function keyboardShortcuts() {
   // Toggle focus outlines: Alt+Shift+F
   document.addEventListener('keydown', (e) => {
