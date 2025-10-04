@@ -1,0 +1,55 @@
+{
+  "name": "focusfix-extension",
+  "version": "1.0.0",
+  "description": "Browser extension to automatically repair broken keyboard navigation for better accessibility",
+  "main": "background/background.js",
+  "scripts": {
+    "validate": "./validate-build.sh",
+    "test": "./test-launcher.sh",
+    "build": "echo 'No build step required - extension ready to load'",
+    "build:prod": "npm run validate && npm run test",
+    "package": "zip -r focusfix-v1.0.0.zip . -x '*.git*' 'node_modules/*' '*.DS_Store*' 'test-*' '*.md' 'coverage/*' 'dist/*'",
+    "clean": "rm -f focusfix-*.zip",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev:firefox": "web-ext run --source-dir=. --firefox=firefox-developer-edition",
+    "watch": "echo 'Development mode - use dev:firefox for auto-reload'"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "keyboard-navigation",
+    "focus-management",
+    "browser-extension",
+    "chrome-extension",
+    "firefox-addon",
+    "wcag",
+    "inclusive-design"
+  ],
+  "author": "FocusFix Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/focusfix-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/focusfix-extension/issues"
+  },
+  "homepage": "https://github.com/your-org/focusfix-extension#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "web-ext": "^7.0.0"
+  },
+  "browserslist": [
+    "Firefox >= 109",
+    "Chrome >= 88",
+    "Edge >= 88"
+  ]
+}

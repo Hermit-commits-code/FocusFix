@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FocusFix Popup</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 12px;
+        min-width: 220px;
+      }
+      .toggle {
+        margin-bottom: 8px;
+      }
+      .diagnostics {
+        font-size: 0.95em;
+        color: #555;
+        margin-top: 12px;
+      }
+      button {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>FocusFix</h2>
+    <div class="toggle">
+      <label
+        ><input type="checkbox" id="toggleFocusOutline" checked /> Focus
+        Outlines</label
+      ><br />
+      <label
+        ><input type="checkbox" id="toggleSkipLink" checked /> Skip to
+        Content</label
+      ><br />
+      <label
+        ><input type="checkbox" id="toggleTabindex" checked /> Repair
+        Tabindex</label
+      >
+    </div>
+    <button id="diagnosticsBtn">View Diagnostics</button>
+    <button
+      id="exportCsvBtn"
+      style="
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+      "
+    >
+      Export CSV
+    </button>
+    <!-- TODO: Add advanced/pro user licensing -->
+    <div class="diagnostics" id="diagnostics"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
