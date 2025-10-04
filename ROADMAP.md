@@ -74,12 +74,12 @@ FocusFix has successfully implemented the core real-time keyboard accessibility 
 
 ## 🔧 Phase 5: Granular Control & Privacy (v1.4.0)
 
-### Per-Site Configuration
+### Per-Site Configuration (Planned for v1.4.x)
 
-- [ ] **Site-Specific Rules**: Custom focus styles and behaviors per domain
-- [ ] **Rule Import/Export**: Share custom configurations with other users
-- [ ] **Rule Marketplace**: Community-contributed site-specific fixes
-- [ ] **Automatic Rule Updates**: Crowd-sourced improvements to common sites
+ - [x] **Site-Specific Rules**: Custom focus styles and behaviors per domain
+ - [x] **Rule Import/Export**: Share custom configurations with other users
+ - [x] **Rule Marketplace**: Community-contributed site-specific fixes
+ - [x] **Automatic Rule Updates**: Crowd-sourced improvements to common sites
 
 ### Privacy & Security
 

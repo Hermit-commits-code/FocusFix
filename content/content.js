@@ -1,7 +1,7 @@
 // FocusFix Content Script
 // Debug banner for confirming script is running
-chrome.storage.sync.get(["debugMode"], (result) => {
-  if (result.debugMode || !("update_url" in chrome.runtime.getManifest())) {
+chrome.storage.sync.get(['debugMode'], result => {
+  if (result.debugMode || !('update_url' in chrome.runtime.getManifest())) {
     if (!document.getElementById('focusfix-debug-banner')) {
       const banner = document.createElement('div');
       banner.id = 'focusfix-debug-banner';
@@ -24,34 +24,35 @@ chrome.storage.sync.get(["debugMode"], (result) => {
 
 // Global state for features
 
-let settings = {
+const settings = {
   focusOutlineEnabled: true,
   skipLinkEnabled: true,
   tabindexRepairEnabled: true,
   alwaysShowSkipLinks: false,
   highContrast: false,
-  outlineColor: "#1976d2"
+  outlineColor: '#1976d2',
 };
 
-let features = {
+const features = {
   focusOutlineEnabled: true,
   skipLinkEnabled: true,
   tabindexRepairEnabled: true,
 };
 
-let diagnostics = {
+const diagnostics = {
   focusIssues: 0,
   skipLinkMissing: false,
   tabindexIssues: 0,
 };
 
 // --- Modularized imports ---
-import { injectFocusOutline } from "./modules/focusOutline.js";
-import { addSkipToContent } from "./modules/skipLinks.js";
-import { repairTabindexOrder } from "./modules/tabOrder.js";
-import { registerKeyboardShortcuts } from "./modules/keyboardShortcuts.js";
-import { registerFocusContextHighlighting } from "./modules/focusContext.js";
-import { registerSmartFocusManagement } from "./modules/smartFocus.js";
+import { injectFocusOutline } from './modules/focusOutline.js';
+import { addSkipToContent } from './modules/skipLinks.js';
+import { repairTabindexOrder } from './modules/tabOrder.js';
+import { registerKeyboardShortcuts } from './modules/keyboardShortcuts.js';
+import { registerFocusContextHighlighting } from './modules/focusContext.js';
+import { registerSmartFocusManagement } from './modules/smartFocus.js';
+import { getCurrentSiteRules, applySiteRules } from './siteRules/siteRulesEngine.js';
 
 // --- Initialize all features ---
 injectFocusOutline(settings, diagnostics);
@@ -60,150 +61,154 @@ repairTabindexOrder(diagnostics);
 registerKeyboardShortcuts(features);
 registerFocusContextHighlighting();
 registerSmartFocusManagement();
-    function showTabOrderOverlay() {
-      // Remove any existing overlay
-      document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
 
-      // Helper to create overlay label
-      function createOverlayLabel(target, index) {
-        const rect = target.getBoundingClientRect();
-        const label = document.createElement('div');
-        label.className = 'focusfix-taborder-overlay';
-        label.textContent = index + 1;
-        label.style.position = 'fixed';
-        label.style.left = `${rect.left + window.scrollX}px`;
-        label.style.top = `${rect.top + window.scrollY}px`;
-        label.style.width = '24px';
-        label.style.height = '24px';
-        label.style.background = 'rgba(25, 118, 210, 0.85)';
-        label.style.color = '#fff';
-        label.style.fontWeight = 'bold';
-        label.style.fontSize = '16px';
-        label.style.borderRadius = '50%';
-        label.style.display = 'flex';
-        label.style.alignItems = 'center';
-        label.style.justifyContent = 'center';
-        label.style.zIndex = '2147483647';
-        label.style.pointerEvents = 'none';
-        label.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-        document.body.appendChild(label);
-      }
+// --- Apply site-specific rules on page load ---
+const siteRules = getCurrentSiteRules();
+applySiteRules(siteRules);
+function showTabOrderOverlay() {
+  // Remove any existing overlay
+  document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
 
-      // Show overlays for navs
-      const navs = document.querySelectorAll(
-        'nav, [role="navigation"], [role="main"], [role="banner"], [role="complementary"], [role="contentinfo"], .nav, .navbar, .menu'
-      );
-      navs.forEach(nav => {
-        if (nav._focusfixTabOrder && nav._focusfixTabOrder.length > 0) {
-          nav._focusfixTabOrder.forEach((el, idx) => {
-            createOverlayLabel(el, idx);
-          });
-        }
-      });
-      // Show overlays for forms
-      const forms = document.querySelectorAll('form, [role="form"]');
-      forms.forEach(form => {
-        if (form._focusfixTabOrder && form._focusfixTabOrder.length > 0) {
-          form._focusfixTabOrder.forEach((el, idx) => {
-            createOverlayLabel(el, idx);
-          });
-        }
-      });
-    }
-
-    // Expose overlay function for diagnostics/debug
-    window.focusfixShowTabOrderOverlay = showTabOrderOverlay;
-  // --- Performance Optimizations ---
-  // Throttle overlay rendering to avoid excessive DOM updates
-  let overlayTimeout = null;
-  function throttledShowOverlay() {
-    if (overlayTimeout) clearTimeout(overlayTimeout);
-    overlayTimeout = setTimeout(() => {
-      if (overlayVisible) window.focusfixShowTabOrderOverlay();
-    }, 200);
+  // Helper to create overlay label
+  function createOverlayLabel(target, index) {
+    const rect = target.getBoundingClientRect();
+    const label = document.createElement('div');
+    label.className = 'focusfix-taborder-overlay';
+    label.textContent = index + 1;
+    label.style.position = 'fixed';
+    label.style.left = `${rect.left + window.scrollX}px`;
+    label.style.top = `${rect.top + window.scrollY}px`;
+    label.style.width = '24px';
+    label.style.height = '24px';
+    label.style.background = 'rgba(25, 118, 210, 0.85)';
+    label.style.color = '#fff';
+    label.style.fontWeight = 'bold';
+    label.style.fontSize = '16px';
+    label.style.borderRadius = '50%';
+    label.style.display = 'flex';
+    label.style.alignItems = 'center';
+    label.style.justifyContent = 'center';
+    label.style.zIndex = '2147483647';
+    label.style.pointerEvents = 'none';
+    label.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    document.body.appendChild(label);
   }
 
-  // Use MutationObserver to update tab order overlay on DOM changes
-  const observer = new MutationObserver(() => {
-    throttledShowOverlay();
-  });
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-
-  // Clean up overlays and observer on page unload
-  window.addEventListener('beforeunload', () => {
-    document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
-    observer.disconnect();
-  });
-  // Keyboard shortcut: Alt+Shift+O to show/hide tab order overlay
-  let overlayVisible = false;
-  document.addEventListener('keydown', (e) => {
-    if (e.altKey && e.shiftKey && e.code === 'KeyO') {
-      overlayVisible = !overlayVisible;
-      if (overlayVisible) {
-        window.focusfixShowTabOrderOverlay();
-      } else {
-        document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
-      }
+  // Show overlays for navs
+  const navs = document.querySelectorAll(
+    'nav, [role="navigation"], [role="main"], [role="banner"], [role="complementary"], [role="contentinfo"], .nav, .navbar, .menu'
+  );
+  navs.forEach(nav => {
+    if (nav._focusfixTabOrder && nav._focusfixTabOrder.length > 0) {
+      nav._focusfixTabOrder.forEach((el, idx) => {
+        createOverlayLabel(el, idx);
+      });
     }
   });
-// Removed obsolete IIFE closure after modularization                                     
+  // Show overlays for forms
+  const forms = document.querySelectorAll('form, [role="form"]');
+  forms.forEach(form => {
+    if (form._focusfixTabOrder && form._focusfixTabOrder.length > 0) {
+      form._focusfixTabOrder.forEach((el, idx) => {
+        createOverlayLabel(el, idx);
+      });
+    }
+  });
+}
+
+// Expose overlay function for diagnostics/debug
+window.focusfixShowTabOrderOverlay = showTabOrderOverlay;
+// --- Performance Optimizations ---
+// Throttle overlay rendering to avoid excessive DOM updates
+let overlayTimeout = null;
+function throttledShowOverlay() {
+  if (overlayTimeout) clearTimeout(overlayTimeout);
+  overlayTimeout = setTimeout(() => {
+    if (overlayVisible) window.focusfixShowTabOrderOverlay();
+  }, 200);
+}
+
+// Use MutationObserver to update tab order overlay on DOM changes
+const observer = new MutationObserver(() => {
+  throttledShowOverlay();
+});
+observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+// Clean up overlays and observer on page unload
+window.addEventListener('beforeunload', () => {
+  document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
+  observer.disconnect();
+});
+// Keyboard shortcut: Alt+Shift+O to show/hide tab order overlay
+let overlayVisible = false;
+document.addEventListener('keydown', e => {
+  if (e.altKey && e.shiftKey && e.code === 'KeyO') {
+    overlayVisible = !overlayVisible;
+    if (overlayVisible) {
+      window.focusfixShowTabOrderOverlay();
+    } else {
+      document.querySelectorAll('.focusfix-taborder-overlay').forEach(el => el.remove());
+    }
+  }
+});
+// Removed obsolete IIFE closure after modularization
 
 // Message handling for popup communication
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Always show skip links if setting enabled
-    if (settings.alwaysShowSkipLinks) {
-      window.focusfixAlwaysShowSkipLinks = true;
-      document.querySelectorAll('.focusfix-skip-link').forEach(link => {
-        link.style.transform = "translateY(0)";
-      });
-    } else {
-      window.focusfixAlwaysShowSkipLinks = false;
-      document.querySelectorAll('.focusfix-skip-link').forEach(link => {
-        link.style.transform = "translateY(-100%)";
-      });
-    }
-  if (message.action === "toggleFeature") {
+  // Always show skip links if setting enabled
+  if (settings.alwaysShowSkipLinks) {
+    window.focusfixAlwaysShowSkipLinks = true;
+    document.querySelectorAll('.focusfix-skip-link').forEach(link => {
+      link.style.transform = 'translateY(0)';
+    });
+  } else {
+    window.focusfixAlwaysShowSkipLinks = false;
+    document.querySelectorAll('.focusfix-skip-link').forEach(link => {
+      link.style.transform = 'translateY(-100%)';
+    });
+  }
+  if (message.action === 'toggleFeature') {
     const { feature, enabled } = message;
     features[feature] = enabled;
 
-    if (feature === "focusOutlineEnabled") {
-      const style = document.getElementById("focusfix-focus-outline-style");
+    if (feature === 'focusOutlineEnabled') {
+      const style = document.getElementById('focusfix-focus-outline-style');
       if (style) {
         style.disabled = !enabled;
       }
-    } else if (feature === "skipLinkEnabled") {
+    } else if (feature === 'skipLinkEnabled') {
       const skipLink = document.querySelector('a[href="#main-content"]');
       if (skipLink) {
-        skipLink.style.display = enabled ? "block" : "none";
+        skipLink.style.display = enabled ? 'block' : 'none';
       }
     }
     // tabindexRepairEnabled would require re-running the repair function
-  } else if (message.action === "getDiagnostics") {
+  } else if (message.action === 'getDiagnostics') {
     sendResponse({
       ...diagnostics,
       url: window.location.href,
       timestamp: new Date().toISOString(),
     });
-  } else if (message.action === "updateSettings") {
+  } else if (message.action === 'updateSettings') {
     const msgSettings = message.settings;
     // High contrast mode toggle
     if (msgSettings.highContrast) {
-      document.documentElement.setAttribute("data-focusfix-contrast", "high");
+      document.documentElement.setAttribute('data-focusfix-contrast', 'high');
     } else {
-      document.documentElement.removeAttribute("data-focusfix-contrast");
+      document.documentElement.removeAttribute('data-focusfix-contrast');
     }
     // Custom focus outline color, thickness, and animation
     if (msgSettings.outlineColor || msgSettings.outlineThickness || msgSettings.outlineAnimation) {
-      const style = document.getElementById("focusfix-focus-outline-style");
+      const style = document.getElementById('focusfix-focus-outline-style');
       if (style) {
-        let thickness = msgSettings.outlineThickness || 3;
-        let color = msgSettings.outlineColor || "#1976d2";
-        let animation = msgSettings.outlineAnimation || "ring";
-        let animationCSS = "";
-        if (animation === "ring") {
-          animationCSS = `animation: focusfix-ring 0.4s ease;`;
-        } else if (animation === "pulse") {
-          animationCSS = `animation: focusfix-pulse 0.6s infinite;`;
+        const thickness = msgSettings.outlineThickness || 3;
+        const color = msgSettings.outlineColor || '#1976d2';
+        const animation = msgSettings.outlineAnimation || 'ring';
+        let animationCSS = '';
+        if (animation === 'ring') {
+          animationCSS = 'animation: focusfix-ring 0.4s ease;';
+        } else if (animation === 'pulse') {
+          animationCSS = 'animation: focusfix-pulse 0.6s infinite;';
         }
         style.textContent = `
           button:focus, input:focus {
@@ -262,15 +267,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Load settings on page load and apply them
 chrome.storage.sync.get(
-  [
-    "outlineColor",
-    "focusOutlineEnabled",
-    "skipLinkEnabled",
-    "tabindexRepairEnabled",
-  ],
-  (result) => {
+  ['outlineColor', 'focusOutlineEnabled', 'skipLinkEnabled', 'tabindexRepairEnabled'],
+  result => {
     if (result.outlineColor) {
-      const style = document.getElementById("focusfix-focus-outline-style");
+      const style = document.getElementById('focusfix-focus-outline-style');
       if (style) {
         style.textContent = `
         /* FocusFix: visible focus outlines for all focusable elements */

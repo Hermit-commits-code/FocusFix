@@ -51,23 +51,19 @@ FocusFix is a privacy-first browser extension that automatically detects and rep
 | Visual Tab Order Preview  | ✅ Complete | Numbered overlay shows tab sequence for diagnostics/debugging               |
 | Real-time Diagnostics     | ✅ Complete | Live keyboard navigation issue detection and reporting                      |
 | Settings Export           | ✅ Complete | Export configuration and diagnostics data                                   |
-| Per-Site Configuration    | ✅ Complete | Persistent user preferences and site-specific rules                         |
+| Per-Site Configuration    | ✅ Complete | Persistent user preferences, site-specific rules, import/export, marketplace, and auto-updates |
 
 All core modules are focused on improving keyboard navigation experience. See [ROADMAP.md](ROADMAP.md) for future keyboard-focused features.
 
-### Upcoming Keyboard Features (Roadmap)
 
-• 🧠 **AI Tab Order**: Machine learning-based tab sequence prediction  
-• 🎨 **Custom Focus Styles**: User-defined focus indicator appearance  
-• ⌨️ **Keyboard Shortcuts**: Quick navigation with custom hotkeys  
-• 🎯 **Focus Context**: Highlight containers and navigation groups  
-• 🔄 **Focus Restoration**: Remember and restore focus in dynamic content  
-• 🌐 **Mobile Browser Support**: Extend compatibility to mobile browsers
+### Per-Site Configuration Features (v1.4.x)
 
-- Advanced tab order logic for complex layouts, ARIA landmarks, and dynamic content
-- Visual tab order preview overlay (Alt+Shift+O or popup button)
-- Real-time diagnostics and CSV export
-- Performance optimizations: throttled overlay, mutation observer, memory management
+• **Site-Specific Rules**: Custom focus styles and behaviors per domain
+• **Rule Import/Export**: Share custom configurations with other users
+• **Rule Marketplace**: Community-contributed site-specific fixes (local simulation)
+• **Automatic Rule Updates**: Crowd-sourced improvements to common sites (local simulation)
+
+All features are now available in the extension popup UI. See [ROADMAP.md](ROADMAP.md) for details.
 
 ## 🚀 v1.1.0 Features
 
