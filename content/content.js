@@ -51,30 +51,37 @@ let diagnostics = {
   if (!document.getElementById(styleId)) {
     const style = document.createElement("style");
     style.id = styleId;
+    let thickness = settings.outlineThickness || 3;
+    let color = settings.outlineColor || "#1976d2";
+    let animation = settings.outlineAnimation || "ring";
+    let animationCSS = "";
+    if (animation === "ring") {
+      animationCSS = `animation: focusfix-ring 0.4s ease;`;
+    } else if (animation === "pulse") {
+      animationCSS = `animation: focusfix-pulse 0.6s infinite;`;
+    }
     style.textContent = `
-      /* FocusFix: animated and high-contrast focus outlines */
       button:focus, input:focus {
-        outline: 2.5px solid #1976d2 !important;
+        outline: ${thickness}px solid ${color} !important;
         outline-offset: 3px !important;
-        box-shadow: 0 0 0 3px #fff, 0 0 0 6px #1976d2;
+        box-shadow: 0 0 0 3px #fff, 0 0 0 6px ${color};
         transition: outline-color 0.2s, box-shadow 0.2s;
-        animation: focusfix-ring 0.4s ease;
+        ${animationCSS}
       }
       a:focus {
-        outline: 2.5px dashed #1976d2 !important;
+        outline: ${thickness}px dashed ${color} !important;
         outline-offset: 3px !important;
-        box-shadow: 0 0 0 3px #fff, 0 0 0 6px #1976d2;
+        box-shadow: 0 0 0 3px #fff, 0 0 0 6px ${color};
         transition: outline-color 0.2s, box-shadow 0.2s;
-        animation: focusfix-ring 0.4s ease;
+        ${animationCSS}
       }
       textarea:focus, select:focus, [tabindex]:focus {
-        outline: 2.5px solid #222 !important;
+        outline: ${thickness}px solid #222 !important;
         outline-offset: 3px !important;
         box-shadow: 0 0 0 3px #fff, 0 0 0 6px #222;
         transition: outline-color 0.2s, box-shadow 0.2s;
-        animation: focusfix-ring 0.4s ease;
+        ${animationCSS}
       }
-      /* High contrast mode */
       html[data-focusfix-contrast="high"] button:focus,
       html[data-focusfix-contrast="high"] a:focus,
       html[data-focusfix-contrast="high"] input:focus,
@@ -89,9 +96,14 @@ let diagnostics = {
         animation: focusfix-ring 0.4s ease;
       }
       @keyframes focusfix-ring {
-        0% { box-shadow: 0 0 0 0 #1976d2; }
-        50% { box-shadow: 0 0 0 8px #1976d244; }
-        100% { box-shadow: 0 0 0 6px #1976d2; }
+        0% { box-shadow: 0 0 0 0 ${color}; }
+        50% { box-shadow: 0 0 0 8px ${color}44; }
+        100% { box-shadow: 0 0 0 6px ${color}; }
+      }
+      @keyframes focusfix-pulse {
+        0% { outline-color: ${color}; }
+        50% { outline-color: #fff; }
+        100% { outline-color: ${color}; }
       }
     `;
     document.head.appendChild(style);
@@ -352,11 +364,65 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       document.documentElement.removeAttribute("data-focusfix-contrast");
     }
-    // Custom focus outline color
-    if (settings.outlineColor) {
+    // Custom focus outline color, thickness, and animation
+    if (settings.outlineColor || settings.outlineThickness || settings.outlineAnimation) {
       const style = document.getElementById("focusfix-focus-outline-style");
       if (style) {
-        style.textContent = style.textContent.replace(/#1976d2/g, settings.outlineColor);
+        let thickness = settings.outlineThickness || 3;
+        let color = settings.outlineColor || "#1976d2";
+        let animation = settings.outlineAnimation || "ring";
+        let animationCSS = "";
+        if (animation === "ring") {
+          animationCSS = `animation: focusfix-ring 0.4s ease;`;
+        } else if (animation === "pulse") {
+          animationCSS = `animation: focusfix-pulse 0.6s infinite;`;
+        }
+        style.textContent = `
+          button:focus, input:focus {
+            outline: ${thickness}px solid ${color} !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px ${color};
+            transition: outline-color 0.2s, box-shadow 0.2s;
+            ${animationCSS}
+          }
+          a:focus {
+            outline: ${thickness}px dashed ${color} !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px ${color};
+            transition: outline-color 0.2s, box-shadow 0.2s;
+            ${animationCSS}
+          }
+          textarea:focus, select:focus, [tabindex]:focus {
+            outline: ${thickness}px solid #222 !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #222;
+            transition: outline-color 0.2s, box-shadow 0.2s;
+            ${animationCSS}
+          }
+          html[data-focusfix-contrast="high"] button:focus,
+          html[data-focusfix-contrast="high"] a:focus,
+          html[data-focusfix-contrast="high"] input:focus,
+          html[data-focusfix-contrast="high"] textarea:focus,
+          html[data-focusfix-contrast="high"] select:focus,
+          html[data-focusfix-contrast="high"] [tabindex]:focus {
+            outline: 3px solid #ffeb3b !important;
+            outline-offset: 4px !important;
+            box-shadow: 0 0 0 4px #000, 0 0 0 8px #ffeb3b;
+            background: #000 !important;
+            color: #fff !important;
+            animation: focusfix-ring 0.4s ease;
+          }
+          @keyframes focusfix-ring {
+            0% { box-shadow: 0 0 0 0 ${color}; }
+            50% { box-shadow: 0 0 0 8px ${color}44; }
+            100% { box-shadow: 0 0 0 6px ${color}; }
+          }
+          @keyframes focusfix-pulse {
+            0% { outline-color: ${color}; }
+            50% { outline-color: #fff; }
+            100% { outline-color: ${color}; }
+          }
+        `;
       }
       const skipLink = document.querySelector('a[href="#main-content"]');
       if (skipLink) {

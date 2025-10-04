@@ -32,6 +32,18 @@
         Focus Outline Color:
         <input type="color" id="outlineColor" value="#1976d2" />
       </label>
+      <label>
+        Focus Outline Thickness:
+        <input type="number" id="outlineThickness" min="1" max="8" value="3" style="width: 60px; margin-left: 8px;" /> px
+      </label>
+      <label>
+        Focus Animation:
+        <select id="outlineAnimation">
+          <option value="none">None</option>
+          <option value="ring">Ring</option>
+          <option value="pulse">Pulse</option>
+        </select>
+      </label>
       <div class="site-list">
         <label>Whitelist Sites (one per line):</label>
         <textarea id="whitelist"></textarea>

@@ -4,10 +4,11 @@
 // Load settings on page load
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.sync.get(
-    ["outlineColor", "whitelist", "blacklist"],
+    ["outlineColor", "outlineThickness", "outlineAnimation", "whitelist", "blacklist"],
     (result) => {
-      document.getElementById("outlineColor").value =
-        result.outlineColor || "#1976d2";
+      document.getElementById("outlineColor").value = result.outlineColor || "#1976d2";
+      document.getElementById("outlineThickness").value = result.outlineThickness || 3;
+      document.getElementById("outlineAnimation").value = result.outlineAnimation || "ring";
       document.getElementById("whitelist").value = result.whitelist || "";
       document.getElementById("blacklist").value = result.blacklist || "";
     }
@@ -22,6 +23,8 @@ document
 
     const settings = {
       outlineColor: document.getElementById("outlineColor").value,
+      outlineThickness: parseInt(document.getElementById("outlineThickness").value, 10),
+      outlineAnimation: document.getElementById("outlineAnimation").value,
       whitelist: document.getElementById("whitelist").value,
       blacklist: document.getElementById("blacklist").value,
     };
