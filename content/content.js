@@ -23,6 +23,16 @@ chrome.storage.sync.get(["debugMode"], (result) => {
 // Injects accessibility fixes into web pages
 
 // Global state for features
+
+let settings = {
+  focusOutlineEnabled: true,
+  skipLinkEnabled: true,
+  tabindexRepairEnabled: true,
+  alwaysShowSkipLinks: false,
+  highContrast: false,
+  outlineColor: "#1976d2"
+};
+
 let features = {
   focusOutlineEnabled: true,
   skipLinkEnabled: true,

@@ -1,3 +1,7 @@
+
+### Content Security Policy (CSP) Warnings
+
+Some websites use strict Content Security Policy (CSP) headers that block third-party scripts, including those injected by browser extensions. FocusFix cannot bypass these restrictions. If you see CSP errors in the console, it means the site is blocking certain scripts and FocusFix may not be able to repair keyboard navigation on those pages. This is a browser security feature and not a bug in FocusFix.
 # FocusFix - Accessibility Browser Extension
 
 ![FocusFix Logo](assets/logo-banner.png)
