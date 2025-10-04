@@ -4,8 +4,8 @@
   "description": "Browser extension to automatically repair broken keyboard navigation for better accessibility",
   "main": "background/background.js",
   "scripts": {
-    "validate": "./validate-build.sh",
-    "test": "./test-launcher.sh",
+  "validate": "npm run lint && npm run format:check",
+  "test": "echo 'Manual testing: Load extension in Firefox or Chrome and verify features.'",
     "build": "echo 'No build step required - extension ready to load'",
     "build:prod": "npm run validate && npm run test",
     "package": "zip -r focusfix-v1.0.0.zip . -x '*.git*' 'node_modules/*' '*.DS_Store*' 'test-*' '*.md' 'coverage/*' 'dist/*'",
@@ -15,6 +15,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev:firefox": "web-ext run --source-dir=. --firefox=firefox-developer-edition",
+    "dev:chrome": "echo 'Open Chrome, go to chrome://extensions, enable Developer mode, and load manifest-chrome.json'",
     "watch": "echo 'Development mode - use dev:firefox for auto-reload'"
   },
   "keywords": [

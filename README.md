@@ -49,6 +49,14 @@ All core modules are focused on improving keyboard navigation experience. See [R
 • 🔄 **Focus Restoration**: Remember and restore focus in dynamic content  
 • 🌐 **Cross-Platform**: Chrome support and mobile browser compatibility
 
+## 🚀 v1.1.0 Features
+
+- Chrome extension support (Manifest V3)
+- Advanced focus indicators: animated rings, high contrast mode, custom styles
+- Multiple skip links: content, navigation, footer
+- Always-visible skip links (optional)
+- Context-aware focus styles for buttons, links, inputs
+
 ## 📦 Installation
 
 ### Firefox (Available Now)
@@ -69,7 +77,17 @@ All core modules are focused on improving keyboard navigation experience. See [R
    # Select manifest.json
    ```
 
-### Chrome (Coming Soon)
+### Chrome (Available for Testing)
+
+1. **Manual Installation (Development)**
+   ```bash
+   git clone https://github.com/yourusername/focusfix-extension.git
+   cd focusfix-extension
+   # Open Chrome and go to chrome://extensions
+   # Enable "Developer mode"
+   # Click "Load unpacked"
+   # Select the project folder (with manifest-chrome.json)
+   ```
 
 Chrome Web Store release planned for v1.1.0. [Track progress →](ROADMAP.md#phase-7-cross-platform-expansion-month-2)
 

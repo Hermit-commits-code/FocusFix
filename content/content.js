@@ -21,11 +21,46 @@ let diagnostics = {
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-      /* FocusFix: visible focus outlines for all focusable elements */
-      button:focus, a:focus, input:focus, textarea:focus, select:focus, [tabindex]:focus {
-        outline: 2px solid #1976d2 !important;
-        outline-offset: 2px !important;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1976d2;
+      /* FocusFix: animated and high-contrast focus outlines */
+      button:focus, input:focus {
+        outline: 2.5px solid #1976d2 !important;
+        outline-offset: 3px !important;
+        box-shadow: 0 0 0 3px #fff, 0 0 0 6px #1976d2;
+        transition: outline-color 0.2s, box-shadow 0.2s;
+        animation: focusfix-ring 0.4s ease;
+      }
+      a:focus {
+        outline: 2.5px dashed #1976d2 !important;
+        outline-offset: 3px !important;
+        box-shadow: 0 0 0 3px #fff, 0 0 0 6px #1976d2;
+        transition: outline-color 0.2s, box-shadow 0.2s;
+        animation: focusfix-ring 0.4s ease;
+      }
+      textarea:focus, select:focus, [tabindex]:focus {
+        outline: 2.5px solid #222 !important;
+        outline-offset: 3px !important;
+        box-shadow: 0 0 0 3px #fff, 0 0 0 6px #222;
+        transition: outline-color 0.2s, box-shadow 0.2s;
+        animation: focusfix-ring 0.4s ease;
+      }
+      /* High contrast mode */
+      html[data-focusfix-contrast="high"] button:focus,
+      html[data-focusfix-contrast="high"] a:focus,
+      html[data-focusfix-contrast="high"] input:focus,
+      html[data-focusfix-contrast="high"] textarea:focus,
+      html[data-focusfix-contrast="high"] select:focus,
+      html[data-focusfix-contrast="high"] [tabindex]:focus {
+        outline: 3px solid #ffeb3b !important;
+        outline-offset: 4px !important;
+        box-shadow: 0 0 0 4px #000, 0 0 0 8px #ffeb3b;
+        background: #000 !important;
+        color: #fff !important;
+        animation: focusfix-ring 0.4s ease;
+      }
+      @keyframes focusfix-ring {
+        0% { box-shadow: 0 0 0 0 #1976d2; }
+        50% { box-shadow: 0 0 0 8px #1976d244; }
+        100% { box-shadow: 0 0 0 6px #1976d2; }
       }
     `;
     document.head.appendChild(style);
@@ -40,53 +75,52 @@ let diagnostics = {
 
 // --- 2. Add "Skip to Content" link if missing ---
 (function addSkipToContent() {
-  const existingSkipLink = document.querySelector(
-    'a[href="#main-content"], a[href="#content"], a[href="#main"]'
-  );
-  if (!existingSkipLink) {
-    diagnostics.skipLinkMissing = true;
-
-    const skipLink = document.createElement("a");
-    skipLink.href = "#main-content";
-    skipLink.textContent = "Skip to Content";
-    skipLink.style.position = "absolute";
-    skipLink.style.top = "0";
-    skipLink.style.left = "0";
-    skipLink.style.background = "#1976d2";
-    skipLink.style.color = "#fff";
-    skipLink.style.padding = "8px 16px";
-    skipLink.style.zIndex = "9999";
-    skipLink.style.transform = "translateY(-100%)";
-    skipLink.style.transition = "transform 0.2s";
-    skipLink.style.textDecoration = "none";
-    skipLink.setAttribute("tabindex", "0");
-    skipLink.addEventListener("focus", () => {
-      skipLink.style.transform = "translateY(0)";
-    });
-    skipLink.addEventListener("blur", () => {
+  const skipTargets = [
+    { id: "main-content", label: "Skip to Content" },
+    { id: "nav", label: "Skip to Navigation" },
+    { id: "footer", label: "Skip to Footer" }
+  ];
+  skipTargets.forEach(target => {
+    const existingSkipLink = document.querySelector(`a[href="#${target.id}"]`);
+    if (!existingSkipLink) {
+      diagnostics.skipLinkMissing = true;
+      const skipLink = document.createElement("a");
+      skipLink.href = `#${target.id}`;
+      skipLink.textContent = target.label;
+      skipLink.className = "focusfix-skip-link";
+      skipLink.style.position = "absolute";
+      skipLink.style.top = "0";
+      skipLink.style.left = "0";
+      skipLink.style.background = "#1976d2";
+      skipLink.style.color = "#fff";
+      skipLink.style.padding = "8px 16px";
+      skipLink.style.zIndex = "9999";
       skipLink.style.transform = "translateY(-100%)";
-    });
-    document.body.insertBefore(skipLink, document.body.firstChild);
+      skipLink.style.transition = "transform 0.2s";
+      skipLink.style.textDecoration = "none";
+      skipLink.setAttribute("tabindex", "0");
+      skipLink.addEventListener("focus", () => {
+        skipLink.style.transform = "translateY(0)";
+      });
+      skipLink.addEventListener("blur", () => {
+        skipLink.style.transform = "translateY(-100%)";
+      });
+      document.body.insertBefore(skipLink, document.body.firstChild);
 
-    // Add main content anchor if missing
-    if (
-      !document.getElementById("main-content") &&
-      !document.getElementById("content") &&
-      !document.getElementById("main")
-    ) {
-      const main = document.createElement("div");
-      main.id = "main-content";
-      main.tabIndex = -1;
-      const mainContent = document.querySelector(
-        'main, [role="main"], .main-content, .content'
-      );
-      if (mainContent) {
-        mainContent.parentNode.insertBefore(main, mainContent);
-      } else {
-        document.body.appendChild(main);
+      // Optionally always show skip links (user setting)
+      if (window.focusfixAlwaysShowSkipLinks) {
+        skipLink.style.transform = "translateY(0)";
+      }
+
+      // Add anchor if missing
+      if (!document.getElementById(target.id)) {
+        const anchor = document.createElement("div");
+        anchor.id = target.id;
+        anchor.tabIndex = -1;
+        document.body.appendChild(anchor);
       }
     }
-  }
+  });
 })();
 
 // --- 3. Repair tabindex order in navbars/forms ---
@@ -149,6 +183,18 @@ let diagnostics = {
 
 // Message handling for popup communication
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Always show skip links if setting enabled
+    if (settings.alwaysShowSkipLinks) {
+      window.focusfixAlwaysShowSkipLinks = true;
+      document.querySelectorAll('.focusfix-skip-link').forEach(link => {
+        link.style.transform = "translateY(0)";
+      });
+    } else {
+      window.focusfixAlwaysShowSkipLinks = false;
+      document.querySelectorAll('.focusfix-skip-link').forEach(link => {
+        link.style.transform = "translateY(-100%)";
+      });
+    }
   if (message.action === "toggleFeature") {
     const { feature, enabled } = message;
     features[feature] = enabled;
@@ -173,23 +219,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   } else if (message.action === "updateSettings") {
     const { settings } = message;
-    // Update focus outline color
-    const style = document.getElementById("focusfix-focus-outline-style");
-    if (style && settings.outlineColor) {
-      style.textContent = `
-        /* FocusFix: visible focus outlines for all focusable elements */
-        button:focus, a:focus, input:focus, textarea:focus, select:focus, [tabindex]:focus {
-          outline: 2px solid ${settings.outlineColor} !important;
-          outline-offset: 2px !important;
-          box-shadow: 0 0 0 2px #fff, 0 0 0 4px ${settings.outlineColor};
-        }
-      `;
+    // High contrast mode toggle
+    if (settings.highContrast) {
+      document.documentElement.setAttribute("data-focusfix-contrast", "high");
+    } else {
+      document.documentElement.removeAttribute("data-focusfix-contrast");
     }
-
-    // Update skip link color to match
-    const skipLink = document.querySelector('a[href="#main-content"]');
-    if (skipLink && settings.outlineColor) {
-      skipLink.style.background = settings.outlineColor;
+    // Custom focus outline color
+    if (settings.outlineColor) {
+      const style = document.getElementById("focusfix-focus-outline-style");
+      if (style) {
+        style.textContent = style.textContent.replace(/#1976d2/g, settings.outlineColor);
+      }
+      const skipLink = document.querySelector('a[href="#main-content"]');
+      if (skipLink) {
+        skipLink.style.background = settings.outlineColor;
+      }
     }
   }
 });
