@@ -255,6 +255,26 @@ npm run test:watch
 • **Performance Tests**: Memory usage and DOM manipulation timing  
 • **Compatibility Tests**: Cross-browser keyboard behavior testing
 
+## 🏗️ Build & Test Instructions
+
+### Chrome
+1. Go to `chrome://extensions`
+2. Enable "Developer mode"
+3. Click "Load unpacked" and select your project folder (with Manifest V3)
+4. Test features: animated focus rings, skip links, high contrast mode, custom styles
+
+### Firefox
+1. Open Firefox Developer Edition
+2. Go to `about:debugging`
+3. Click "This Firefox" → "Load Temporary Add-on"
+4. Select your project folder and choose Manifest V2
+5. Test features as above
+
+## 🌐 Cross-Browser Notes
+- FocusFix is tested and optimized for Chrome (Manifest V3) and Firefox (Manifest V2)
+- Some sites (Twitter, Chrome Web Store) may block extension scripts due to CSP
+- For best results, test on a variety of real-world sites
+
 ## 🤝 Contributing
 
 We welcome contributions from the keyboard navigation and accessibility community! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
@@ -351,3 +371,24 @@ MIT License - Copyright (c) 2025 FocusFix Team
 ⭐ **Star this repository if FocusFix improves your keyboard navigation experience!** ⭐
 
 _Making keyboard navigation better, one website at a time._
+
+## 🛠️ Troubleshooting & Limitations
+
+FocusFix may not work on all websites due to browser security restrictions:
+- Sites with strict Content Security Policy (CSP), like Twitter or Chrome Web Store, may block extension scripts and styles.
+- Internal browser pages (chrome://, about:) do not allow extensions.
+- Some sites use custom protections against third-party scripts.
+
+### How to Check if FocusFix is Running
+- Open DevTools Console and look for "FocusFix Content Script" logs.
+- Tab through the page: look for visible focus rings and skip links.
+- Try on a simple site (like example.com) to confirm extension functionality.
+- Enable debug mode (see below) for a visible "FocusFix active" banner.
+
+### Debug Mode
+- You can enable debug mode in settings or via the extension popup to show a small "FocusFix active" banner on supported pages.
+
+### User Feedback
+- If FocusFix does not work on a site, please report it via GitHub Issues. Include the site URL and any error messages from DevTools Console.
+
+For more details, see the docs/ folder and ROADMAP.md.

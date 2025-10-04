@@ -1,4 +1,25 @@
 // FocusFix Content Script
+// Debug banner for confirming script is running
+chrome.storage.sync.get(["debugMode"], (result) => {
+  if (result.debugMode || !("update_url" in chrome.runtime.getManifest())) {
+    if (!document.getElementById('focusfix-debug-banner')) {
+      const banner = document.createElement('div');
+      banner.id = 'focusfix-debug-banner';
+      banner.textContent = 'FocusFix active';
+      banner.style.position = 'fixed';
+      banner.style.bottom = '12px';
+      banner.style.right = '12px';
+      banner.style.background = '#1976d2';
+      banner.style.color = '#fff';
+      banner.style.padding = '6px 16px';
+      banner.style.zIndex = '99999';
+      banner.style.fontSize = '14px';
+      banner.style.borderRadius = '6px';
+      banner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+      document.body.appendChild(banner);
+    }
+  }
+});
 // Injects accessibility fixes into web pages
 
 // Global state for features
